@@ -72,6 +72,10 @@ namespace EventBus.RabbitMQ
 
             this._consumerChannel.ExchangeDeclare(exchange: base.EventBusConfig.DefaultTopicName, type: "direct");
 
+            this._consumerChannel.QueueBind(queue: base.GetSubName(eventName),
+                                                exchange: base.EventBusConfig.DefaultTopicName,
+                                                routingKey: eventName);
+
             var message = JsonConvert.SerializeObject(@event);
             var body = Encoding.UTF8.GetBytes(message);
 
@@ -81,9 +85,17 @@ namespace EventBus.RabbitMQ
                 properties.DeliveryMode = 2; //persistent
 
 
-                this._consumerChannel.QueueDeclare(queue: base.GetSubName(eventName), durable: true, exclusive: false, autoDelete: false, arguments: null);
+                //this._consumerChannel.QueueDeclare(queue: base.GetSubName(eventName), durable: true, exclusive: false, autoDelete: false, arguments: null);
 
-                this._consumerChannel.BasicPublish(exchange: base.EventBusConfig.DefaultTopicName, routingKey: eventName, mandatory: true, basicProperties: properties, body: body);
+                //this._consumerChannel.QueueBind(queue: base.GetSubName(eventName),
+                //                                exchange: base.EventBusConfig.DefaultTopicName,
+                //                                routingKey: eventName);
+
+                this._consumerChannel.BasicPublish(exchange: base.EventBusConfig.DefaultTopicName,
+                                                   routingKey: eventName,
+                                                   mandatory: true,
+                                                   basicProperties: properties,
+                                                   body: body);
             });
         }
 
@@ -101,7 +113,9 @@ namespace EventBus.RabbitMQ
 
                 this._consumerChannel.QueueDeclare(queue: base.GetSubName(eventName), durable: true, exclusive: false, autoDelete: false, arguments: null);
 
-                this._consumerChannel.QueueBind(queue: base.GetSubName(eventName), exchange: base.EventBusConfig.DefaultTopicName, routingKey: eventName);
+                this._consumerChannel.QueueBind(queue: base.GetSubName(eventName),
+                                                exchange: base.EventBusConfig.DefaultTopicName,
+                                                routingKey: eventName);
             }
 
             base.SubsManager.AddSubscription<T, TH>();

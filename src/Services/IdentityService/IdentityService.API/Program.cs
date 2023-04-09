@@ -1,4 +1,6 @@
 
+using IdentityService.API.Application.Services;
+
 namespace IdentityService.API
 {
     public class Program
@@ -13,7 +15,7 @@ namespace IdentityService.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddScoped<IIdentityService,IdentityService.API.Application.Services.IdentityService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
